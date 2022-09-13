@@ -214,6 +214,25 @@ const VideoPlayer = () => {
   };
 
   useEffect(() => {
+    // disable hover
+    let global = 3;
+    const noMovement = () => {
+      if (global === 0) {
+        videoContainerRef.current?.classList.remove("hover");
+      } else {
+        global--;
+      }
+    };
+    const resetGlobal = () => {
+      global = 3;
+      videoContainerRef.current?.classList.add("hover");
+    };
+    document.addEventListener("mousemove", resetGlobal);
+    document.addEventListener("keydown", resetGlobal);
+    const interval = setInterval(() => {
+      noMovement();
+    }, 1000);
+
     // mini player
     videoPlayerRef.current?.addEventListener("enterpictureinpicture", () => {
       videoContainerRef.current?.classList.add("mini-player");
@@ -226,6 +245,10 @@ const VideoPlayer = () => {
       const captions = videoPlayerRef.current?.textTracks[0];
       captions.mode = "hidden";
     }
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   document.addEventListener("mouseup", (e) => {
@@ -272,7 +295,7 @@ const VideoPlayer = () => {
   return (
     <div
       ref={videoContainerRef}
-      className="video-container paused"
+      className="video-container paused hover"
       data-volume-level="high"
     >
       <img
@@ -340,7 +363,6 @@ const VideoPlayer = () => {
         </div>
       </div>
       <video
-        className="w-full"
         src="/Video.mp4"
         ref={videoPlayerRef}
         autoPlay={true}
